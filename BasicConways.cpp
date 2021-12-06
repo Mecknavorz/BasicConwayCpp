@@ -49,9 +49,10 @@ void iterate_board(){
     for(int i=0; i < 90; i++){
         for(int j=0; j < 90; j++){
             int x = count_nearby(i, j);
+            /*
             if(x> 0){
                 cout << "[Near (" << i << ", " << j << "): " << x << "] ";
-            }
+            }*/
             if(board[i][j] == true){ //conditions for living neighbors
                 if(x < 2){ //if there are less than two live neighours, die
                     nboard[i][j] = false;
@@ -75,7 +76,21 @@ void iterate_board(){
         }
     }
 
-    cout << "\n";
+    //cout << "\n";
+}
+
+void spawnRand(int liv){
+    for(int i=0; i < 90; i++){
+        for(int j=0; j < 90; j++){
+            int x = std::rand()%100; //generate a random number between 0 and 99
+            if(x <= liv){ //if out number is less than the desired % alive, make alive
+                board[i][j] = true;
+            }
+            else{ //otherwise set to dead
+                board[i][j] = false;
+            }
+        }
+    }
 }
 
 
@@ -157,6 +172,10 @@ int main() {
                 //cout << "paused: " << pause << "\n";
                 iterate_board();
             }
+            if(text[0]=='r'){
+                spawnRand(50); // spawn rate in 50%
+                redraw();
+            }
         }
 
         //add or remove a cell where we click and add it to the gameboard
@@ -172,10 +191,6 @@ int main() {
             XSetForeground(dis, gc, 255); //this might need to go in the for loops below
             //if there's no cell there put one there
             board[bx][by] = !board[bx][by];
-        }
-
-        if(!pause){
-            
         }
 
         //draw the cells
