@@ -49,8 +49,8 @@ void iterate_board(){
     for(int i=0; i < 90; i++){
         for(int j=0; j < 90; j++){
             int x = count_nearby(i, j);
-            /*
-            if(x> 0){
+            //function for debugging
+            /*if(x> 0){
                 cout << "[Near (" << i << ", " << j << "): " << x << "] ";
             }*/
             if(board[i][j] == true){ //conditions for living neighbors
@@ -59,6 +59,9 @@ void iterate_board(){
                 } 
                 else if(x > 3){ //if there are more than three live neighbors, die
                     nboard[i][j] = false;
+                }
+                else{ //if there's the right number of neighbors then make sure the cell is alive
+                    nboard[i][j] = true;
                 }
             }
             else { //condition for the dead cells
@@ -145,19 +148,21 @@ int main() {
     char text[255]; //a char buffer for keypress
 
     init_X(); //initialize the display
-    //to puase and unpause
-    //bool pause = true;
-
-    //initialize the board
-    /*
-    for(int i=0; i < 90; i++){
-        for(int j=0; j < 90; j++){
-            board[i][j] = false;
-            nboard[i][j] = false;
-        }
-    }*/
 
     while(1){
+        //draw the cells
+        //I tried having it pull off the size of the array but that caused a segfault
+        for (int i=0; i<90; i++){
+            for(int j=0; j<90; j++){
+            if(board[i][j] == true){
+                    XFillRectangle(dis, win, gc, (i*10), (j*10), 10, 10);
+                }
+                else{
+                    XClearArea(dis, win, (i*10), (j*10), 10, 10, 0);
+                }
+            }
+        }
+
         XNextEvent(dis, &event);
         if(event.type==Expose && event.xexpose.count==0){
             redraw(); //if the window is exposed redraw
@@ -167,13 +172,12 @@ int main() {
             if(text[0]=='q'){
                 close_x(); //quite the game if q is pressed
             }
-            if(text[0]==' '){
-                //pause = !pause; //toggle pause
-                //cout << "paused: " << pause << "\n";
+            if(text[0]==' '){ //iterate when we press space, continuous if held
                 iterate_board();
             }
             if(text[0]=='r'){
                 spawnRand(50); // spawn rate in 50%
+                //iterate_board();
                 redraw();
             }
         }
@@ -190,20 +194,9 @@ int main() {
             //cout << "nearby: " << count_nearby(bx, by) << "\n";
             XSetForeground(dis, gc, 255); //this might need to go in the for loops below
             //if there's no cell there put one there
-            board[bx][by] = !board[bx][by];
-        }
-
-        //draw the cells
-        //I tried having it pull off the size of the array but that caused a segfault
-        for (int i=0; i<90; i++){
-            for(int j=0; j<90; j++){
-                if(board[i][j] == true){
-                    XFillRectangle(dis, win, gc, (i*10), (j*10), 10, 10);
-                }
-                else{
-                    XClearArea(dis, win, (i*10), (j*10), 10, 10, 0);
-                }
-            }
+            board[bx][by] = !board[bx][by]; ///this might be broken?
+            //cout << "(" << bx << ", " << by << ") set to " << board[bx][by] << "\n";
+            //cout << "nearby: " << count_nearby(bx, by) << "\n";
         }
     }
 
